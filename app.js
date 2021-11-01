@@ -66,10 +66,36 @@ function cadastrarDespesa(){
     )
     
     if(despesa.validarDados()){
-        bd.gravar(despesa)
-        console.log("Dados válidos")
-
+        
+        bd.gravar(despesa)  
+        exibeModal(true)
+        
     }else{
-        console.log("Dados inválidos")
+        exibeModal(false)       
+     
     }
+    $("#modalRegistraDespesa").modal("show")
+}
+
+function exibeModal(sucesso){
+    let modalTitulo = document.getElementById("modalTitulo")
+    let modalConteudo = document.getElementById("modalConteudo")
+    let modalButton = document.getElementById("modalButton")
+
+    if(sucesso){
+        modalTitulo.innerHTML = "Sucesso ao Registrar"
+        modalTitulo.className += " text-success"
+        modalConteudo.innerHTML = "Registro adicionado com sucesso!"
+        modalButton.className += " btn-success"
+        console.log(modalTitulo, modalConteudo, modalButton)
+        
+    }else{
+        modalTitulo.innerHTML = "Erro ao Registrar"
+        modalTitulo.className += " text-danger"
+        modalConteudo.innerHTML = "Existem campos obrigatórios não preenchidos!"
+        modalButton.className += " btn-danger"
+        console.log(modalTitulo, modalConteudo, modalButton)
+
+    }
+    //Selecionando elemento com JQuery e exibindo modal erro
 }
