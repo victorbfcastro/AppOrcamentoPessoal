@@ -18,11 +18,13 @@
     integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
     crossorigin="anonymous"></script>
   <!-- Bootstrap fim -->
-
+  
+  <link rel="stylesheet" href="Estilos/estilos.css">
+  
   <!-- Font Awesome -->
   <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
 
-  <script src="app.js"></script>
+  <script src="Scripts/app.js"></script>
 </head>
 
 <body onload="carregaListaDespesas()">
@@ -123,14 +125,15 @@
     </div>
     <div class="row">
       <div class="col">
-        <table class="table">
-          <thead>
+        <table class="table table-striped">
+          <thead class="thead-dark">
             <!-- Cabeçalho da tabela -->
             <tr>
               <th>Data</th>
               <th>Tipo</th>
               <th>Descrição</th>
-              <th>Valor</th>
+              <th>Valor (R$)</th>
+              <th></th>
               <th></th>
             </tr>
           </thead>

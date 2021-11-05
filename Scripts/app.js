@@ -46,25 +46,36 @@ class BD {
 
     }
 
-    recuperarTodosRegistros() {
+    async recuperarTodosRegistros() {
         //Array de despesas
         let despesas = Array()
 
-        let id = localStorage.getItem('id')
+        var response = ''
+        const request = await fetch('http://localhost:5000/api/Despesas')
+            .then(T => T.json())
+            .then(data => response = data)
 
-        //Recuperando todas as despesas cadastradas em LocalStorage
-        for (let i = 1; i <= id; i++) {
-            let despesa = JSON.parse(localStorage.getItem(i))
+        var responseFinal = parseData(response)
+        
+        responseFinal.forEach(function(d){
+            despesas.push(d)
+        })
 
-            //Caso a despesa recuperada esteja nula, continua para o proximo laço sem adicionar ao Array
-            if (despesa === null) {
-                continue
-            }
+        // let id = localStorage.getItem('id')
 
-            //seta um id para cada item
-            despesa.id = i
-            despesas.push(despesa)
-        }
+        // //Recuperando todas as despesas cadastradas em LocalStorage
+        // for (let i = 1; i <= id; i++) {
+        //     let despesa = JSON.parse(localStorage.getItem(i))
+
+        //     //Caso a despesa recuperada esteja nula, continua para o proximo laço sem adicionar ao Array
+        //     if (despesa === null) {
+        //         continue
+        //     }
+
+        //     //seta um id para cada item
+        //     despesa.id = i
+        //     despesas.push(despesa)
+        // }
 
         return despesas
     }
@@ -182,10 +193,10 @@ function exibeModal(sucesso) {
     //Selecionando elemento com JQuery e exibindo modal erro
 }
 
-function carregaListaDespesas(despesas = Array(), filtro = false) {
+async function carregaListaDespesas(despesas = Array(), filtro = false) {
 
     if (despesas.length == 0 && filtro == false) {
-        despesas = bd.recuperarTodosRegistros()
+        despesas = await bd.recuperarTodosRegistros()
     }
 
     var tabelaDespesas = document.getElementById("tabelaDespesas")
@@ -198,7 +209,7 @@ function carregaListaDespesas(despesas = Array(), filtro = false) {
         let linha = tabelaDespesas.insertRow()
 
         //Criando colunas na row criada (td)
-        linha.insertCell(0).innerHTML = `${d.dia}/${d.mes}/${d.ano}`
+        linha.insertCell(0).innerHTML = `${d.datA_DESP.getDate()}/${d.datA_DESP.getMonth() + 1}/${d.datA_DESP.getFullYear()}`
 
         switch (d.tipo) {
             case '1': d.tipo = 'Alimentação'
@@ -219,18 +230,33 @@ function carregaListaDespesas(despesas = Array(), filtro = false) {
 
         linha.insertCell(1).innerHTML = d.tipo
         linha.insertCell(2).innerHTML = d.descricao
-        linha.insertCell(3).innerHTML = d.valor
+        //linha.insertCell(3).innerHTML = d.valor.toFixed(2).toString().replace('.',',');
+        linha.insertCell(3).innerHTML = d.valor.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
 
-        //Criar botao de exclusao
-        let btn = document.createElement("button")
-        btn.className = 'btn btn-danger btn-sm'
-        btn.innerHTML = '<i class="fas fa-times"></i>'
-        btn.id = `id_despesa_${d.id}`
-        btn.onclick = function() {
+          //Criar botao de Edição
+          let btnEditar = document.createElement("button")
+          btnEditar.className = 'btn btn-success btn-sm'
+          btnEditar.innerHTML = '<i class="fa fa-edit"></i>'
+          btnEditar.id = `id_despesa_${d.id}`
+          btnEditar.onclick = function () {
+              remover(d.id)
+          }
+
+        //Criar botao de Exclusao
+        let btnExcluir = document.createElement("button")
+        btnExcluir.className = 'btn btn-danger btn-sm btn-excluir'
+        btnExcluir.innerHTML = '<i class="fas fa-times" style="width:15px"></i>'
+        btnExcluir.id = `id_despesa_${d.id}`
+        btnExcluir.onclick = function () {
             remover(d.id)
         }
 
-        linha.insertCell(4).append(btn)
+
+        linha.insertCell(4).append(btnEditar)
+        linha.insertCell(5).append(btnExcluir)
     })
 }
 
@@ -266,6 +292,12 @@ function remover(id) {
         bd.removerDespesa(id)
         window.location.reload()
     }
+}
 
+function parseData(response) {
+    response.forEach(function (r) {
+        r['datA_DESP'] = new Date(Date.parse(r['datA_DESP']))    
+    })
 
+    return response
 }
