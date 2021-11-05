@@ -35,14 +35,26 @@ class BD {
         return parseInt(proximoId) + 1
     }
 
-    gravar(despesa) {
-        //Chama funcao que identifica ultimo ID e acrescenta 1
-        let id = this.getProximoId()
+    async gravar(despesa) {
+        var jsonBody = {
+            "DATA_DESP": `${despesa.dia}-${despesa.mes}-${despesa.ano}`,
+            "TIPO": `${despesa.tipo}`,
+            "DESCRICAO": `${despesa.descricao}`,
+            "VALOR": `${despesa.valor}`
+        }
 
-        //Para registrar algo no Local Storage do browser é necessário que o objeto seja representado em formato JSON como abaixo
-        localStorage.setItem(id, JSON.stringify(despesa))
+        var response = ''
+        const request = await fetch('http://localhost:5000/api/Despesas', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonBody)
+        })
+            .then(data => response = data)
 
-        localStorage.setItem('id', id)
+            console.log(response)
 
     }
 
@@ -80,7 +92,7 @@ class BD {
         return despesas
     }
 
-    pesquisar(despesa) {
+    async pesquisar(despesa) {
         /*Recebendo uma despesa pra fazer a pesquisa e filtrar resultado
             Para utilizar o filter do Array:
             
@@ -92,26 +104,42 @@ class BD {
         */
 
         let despesasFiltradas = Array()
-        despesasFiltradas = this.recuperarTodosRegistros()
+        despesasFiltradas = await this.recuperarTodosRegistros()
 
         if (despesa.dia != '') {
-            despesasFiltradas = despesasFiltradas.filter(f => f.dia == despesa.dia)
+            despesasFiltradas = despesasFiltradas.filter(f => f.datA_DESP.getDate() == despesa.dia)
         }
 
         if (despesa.mes != '') {
-            despesasFiltradas = despesasFiltradas.filter(f => f.mes == despesa.mes)
+            despesasFiltradas = despesasFiltradas.filter(f => f.datA_DESP.getMonth() + 1 == despesa.mes)
         }
 
         if (despesa.ano != '') {
-            despesasFiltradas = despesasFiltradas.filter(f => f.ano == despesa.ano)
+            despesasFiltradas = despesasFiltradas.filter(f => f.datA_DESP.getFullYear() == despesa.ano)
         }
 
         if (despesa.tipo != '') {
+            switch (despesa.tipo) {
+                case '1': despesa.tipo = 'Alimentação'
+                    break
+                case '2': despesa.tipo = 'Faculdade'
+                    break
+                case '3': despesa.tipo = 'Lazer'
+                    break
+                case '4': despesa.tipo = 'Saúde'
+                    break
+                case '5': despesa.tipo = 'Aluguel'
+                    break
+                case '6': despesa.tipo = 'Cartão de Crédito'
+                    break
+                case '7': despesa.tipo = 'Contas Fixas'
+                    break
+            }
             despesasFiltradas = despesasFiltradas.filter(f => f.tipo == despesa.tipo)
         }
 
         if (despesa.descricao != '') {
-            despesasFiltradas = despesasFiltradas.filter(f => f.descricao == despesa.descricao)
+            despesasFiltradas = despesasFiltradas.filter(f => f.descricao.includes(despesa.descricao))
         }
 
         if (despesa.valor != '' && despesa.valor !== undefined) {
@@ -148,7 +176,6 @@ function cadastrarDespesa() {
     )
 
     if (despesa.validarDados()) {
-
         bd.gravar(despesa)
 
         //Limpando campos após registro com sucesso
@@ -194,13 +221,22 @@ function exibeModal(sucesso) {
 }
 
 async function carregaListaDespesas(despesas = Array(), filtro = false) {
-
-    if (despesas.length == 0 && filtro == false) {
-        despesas = await bd.recuperarTodosRegistros()
-    }
-
+    
     var tabelaDespesas = document.getElementById("tabelaDespesas")
     tabelaDespesas.innerHTML = ''
+    
+    if (despesas.length == 0 && filtro == false) {
+        despesas = await bd.recuperarTodosRegistros()
+    }else if(despesas.length == 0 && filtro == true){
+        let linha = tabelaDespesas.insertRow()
+        linha.insertCell(0).innerHTML = 'Nenhum registro encontrado!'
+        linha.insertCell(1)
+        linha.insertCell(2)
+        linha.insertCell(3)
+        linha.insertCell(4)
+        linha.insertCell(5)
+    }
+
 
     //Percorre o array de despesas para criar as rows na tabela
     despesas.forEach(function (d) {
@@ -260,16 +296,17 @@ async function carregaListaDespesas(despesas = Array(), filtro = false) {
     })
 }
 
-function filtroPesquisa() {
+async function filtroPesquisa() {
     let ano = document.getElementById('ano').value
     let mes = document.getElementById('mes').value
     let dia = document.getElementById('dia').value
+    let tipo = document.getElementById('tipo').value
     let descricao = document.getElementById('descricao').value
     let valor = document.getElementById('valor').value
 
-    let despesa = new Despesa(ano, mes, dia, descricao, valor)
+    let despesa = new Despesa(ano, mes, dia, tipo, descricao, valor)
 
-    let despesasFiltradas = bd.pesquisar(despesa)
+    let despesasFiltradas = await bd.pesquisar(despesa)
 
     carregaListaDespesas(despesasFiltradas, true)
 }

@@ -9,6 +9,8 @@ using System.Data;
 using Dapper;
 using AppOrcamentoPessoalAPI.Data;
 using Microsoft.AspNetCore.Cors;
+using Newtonsoft.Json;
+using AppOrcamentoPessoalAPI.Model;
 
 namespace AppOrcamentoPessoalAPI.Controllers
 {
@@ -19,10 +21,10 @@ namespace AppOrcamentoPessoalAPI.Controllers
     {
         public readonly IRepository _repo;
         
-        private IConfiguration _config;
-        public DespesasController(IConfiguration configuration, IRepository repo)
+        // private IConfiguration _config;
+        public DespesasController(IRepository repo)
         {
-            _config = configuration;
+            //_config = configuration;
             _repo = repo;
         }
 
@@ -31,6 +33,20 @@ namespace AppOrcamentoPessoalAPI.Controllers
             var despesas = await _repo.GetAllDespesasAsync();
 
             return Ok(despesas);
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] Despesa model){
+            //Despesa addDespesa = JsonConvert.DeserializeObject<Despesa>(model);
+
+            var sucesso = _repo.CadastraDespesaAsync(model);
+
+            if(sucesso.Result){
+                return Ok(model);
+            }
+
+            return BadRequest();
+            
         }
     }
 }

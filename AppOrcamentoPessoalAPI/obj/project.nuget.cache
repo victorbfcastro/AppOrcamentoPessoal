@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "d2WwV3Xbl3cfcHlDyFLisfrJv5Z8p/UwOl8ERmOf+SBFW8WwqDXVanfcH8qn0eqYropkNzbj8Q4hj/Ly0gQ4Ng==",
+  "dgSpecHash": "3LoY3uiG8zuIM357ySaQPszmZvghRcruLNcHv/C7IwG6Ie/nvmxmpUjHjvEiet78zRr6etTQ5uh4AXxw2c4VCw==",
   "success": true,
   "projectFilePath": "/home/victor/Documentos/Curso JavaScript/AppOrcamentoPessoal/AppOrcamentoPessoalAPI/AppOrcamentoPessoalAPI.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,9 @@
     "/home/victor/.nuget/packages/microsoft.aspnetcore.http.abstractions/2.2.0/microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
     "/home/victor/.nuget/packages/microsoft.aspnetcore.http.extensions/2.2.0/microsoft.aspnetcore.http.extensions.2.2.0.nupkg.sha512",
     "/home/victor/.nuget/packages/microsoft.aspnetcore.http.features/2.2.0/microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512",
+    "/home/victor/.nuget/packages/microsoft.aspnetcore.jsonpatch/5.0.11/microsoft.aspnetcore.jsonpatch.5.0.11.nupkg.sha512",
+    "/home/victor/.nuget/packages/microsoft.aspnetcore.mvc.newtonsoftjson/5.0.11/microsoft.aspnetcore.mvc.newtonsoftjson.5.0.11.nupkg.sha512",
+    "/home/victor/.nuget/packages/microsoft.csharp/4.7.0/microsoft.csharp.4.7.0.nupkg.sha512",
     "/home/victor/.nuget/packages/microsoft.extensions.apidescription.server/3.0.0/microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
     "/home/victor/.nuget/packages/microsoft.extensions.configuration.abstractions/2.2.0/microsoft.extensions.configuration.abstractions.2.2.0.nupkg.sha512",
     "/home/victor/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/2.2.0/microsoft.extensions.dependencyinjection.abstractions.2.2.0.nupkg.sha512",
@@ -20,6 +23,8 @@
     "/home/victor/.nuget/packages/microsoft.netcore.platforms/3.1.0/microsoft.netcore.platforms.3.1.0.nupkg.sha512",
     "/home/victor/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
     "/home/victor/.nuget/packages/microsoft.win32.registry/4.7.0/microsoft.win32.registry.4.7.0.nupkg.sha512",
+    "/home/victor/.nuget/packages/newtonsoft.json/12.0.2/newtonsoft.json.12.0.2.nupkg.sha512",
+    "/home/victor/.nuget/packages/newtonsoft.json.bson/1.0.2/newtonsoft.json.bson.1.0.2.nupkg.sha512",
     "/home/victor/.nuget/packages/runtime.native.system.data.sqlclient.sni/4.7.0/runtime.native.system.data.sqlclient.sni.4.7.0.nupkg.sha512",
     "/home/victor/.nuget/packages/runtime.win-arm64.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-arm64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "/home/victor/.nuget/packages/runtime.win-x64.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-x64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
