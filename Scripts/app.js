@@ -54,7 +54,11 @@ class BD {
         })
             .then(data => response = data)
 
-            console.log(response)
+        if (response.status != undefined && response.status == '200') {
+            return true
+        }
+
+        return false
 
     }
 
@@ -68,26 +72,10 @@ class BD {
             .then(data => response = data)
 
         var responseFinal = parseData(response)
-        
-        responseFinal.forEach(function(d){
+
+        responseFinal.forEach(function (d) {
             despesas.push(d)
         })
-
-        // let id = localStorage.getItem('id')
-
-        // //Recuperando todas as despesas cadastradas em LocalStorage
-        // for (let i = 1; i <= id; i++) {
-        //     let despesa = JSON.parse(localStorage.getItem(i))
-
-        //     //Caso a despesa recuperada esteja nula, continua para o proximo laço sem adicionar ao Array
-        //     if (despesa === null) {
-        //         continue
-        //     }
-
-        //     //seta um id para cada item
-        //     despesa.id = i
-        //     despesas.push(despesa)
-        // }
 
         return despesas
     }
@@ -150,14 +138,37 @@ class BD {
 
     }
 
-    removerDespesa(id) {
-        localStorage.removeItem(id)
+    async removerDespesa(id) {
+        const request = await fetch('http://localhost:5000/api/Despesas/' + id, {
+            method: 'DELETE',
+        })
+            .then(data => response = data)
+
+        if (response.status != undefined && response.status == '200') {
+            return true
+        }
+
+        return false
+    }
+
+    async editarDespesa(id) {
+        fetch('http://localhost:5000/api/Despesas/' + id, {
+            method: 'PATCH',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                {
+                    "likes": 5
+                }
+            )
+        });
     }
 }
 
 let bd = new BD()
 
-function cadastrarDespesa() {
+async function cadastrarDespesa() {
 
     let ano = document.getElementById("ano")
     let mes = document.getElementById("mes")
@@ -176,17 +187,22 @@ function cadastrarDespesa() {
     )
 
     if (despesa.validarDados()) {
-        bd.gravar(despesa)
+        var sucesso = await bd.gravar(despesa)
 
-        //Limpando campos após registro com sucesso
-        ano.value = ''
-        mes.value = ''
-        dia.value = ''
-        tipo.value = ''
-        descricao.value = ''
-        valor.value = ''
+        if (sucesso) {
+            exibeModal(true)
 
-        exibeModal(true)
+            //Limpando campos após registro com sucesso
+            ano.value = ''
+            mes.value = ''
+            dia.value = ''
+            tipo.value = ''
+            descricao.value = ''
+            valor.value = ''
+
+        } else {
+            alert("Erro ao adicionar despesa no banco de dados!") //SUBSTITUIR POR MODAL!!
+        }
 
     } else {
         exibeModal(false)
@@ -221,13 +237,14 @@ function exibeModal(sucesso) {
 }
 
 async function carregaListaDespesas(despesas = Array(), filtro = false) {
-    
+
     var tabelaDespesas = document.getElementById("tabelaDespesas")
     tabelaDespesas.innerHTML = ''
-    
+
     if (despesas.length == 0 && filtro == false) {
         despesas = await bd.recuperarTodosRegistros()
-    }else if(despesas.length == 0 && filtro == true){
+
+    } else if (despesas.length == 0 && filtro == true) {
         let linha = tabelaDespesas.insertRow()
         linha.insertCell(0).innerHTML = 'Nenhum registro encontrado!'
         linha.insertCell(1)
@@ -244,8 +261,9 @@ async function carregaListaDespesas(despesas = Array(), filtro = false) {
         //Criando row (tr)
         let linha = tabelaDespesas.insertRow()
 
+        linha.insertCell(0).innerHTML = d.iddespesa
         //Criando colunas na row criada (td)
-        linha.insertCell(0).innerHTML = `${d.datA_DESP.getDate()}/${d.datA_DESP.getMonth() + 1}/${d.datA_DESP.getFullYear()}`
+        linha.insertCell(1).innerHTML = `${d.datA_DESP.getDate().toString().padStart(2, "0")}/${(d.datA_DESP.getMonth() + 1).toString().padStart(2, "0")}/${d.datA_DESP.getFullYear()}`
 
         switch (d.tipo) {
             case '1': d.tipo = 'Alimentação'
@@ -264,35 +282,35 @@ async function carregaListaDespesas(despesas = Array(), filtro = false) {
                 break
         }
 
-        linha.insertCell(1).innerHTML = d.tipo
-        linha.insertCell(2).innerHTML = d.descricao
+        linha.insertCell(2).innerHTML = d.tipo
+        linha.insertCell(3).innerHTML = d.descricao
         //linha.insertCell(3).innerHTML = d.valor.toFixed(2).toString().replace('.',',');
-        linha.insertCell(3).innerHTML = d.valor.toLocaleString('pt-BR', {
+        linha.insertCell(4).innerHTML = d.valor.toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-          })
+        })
 
-          //Criar botao de Edição
-          let btnEditar = document.createElement("button")
-          btnEditar.className = 'btn btn-success btn-sm'
-          btnEditar.innerHTML = '<i class="fa fa-edit"></i>'
-          btnEditar.id = `id_despesa_${d.id}`
-          btnEditar.onclick = function () {
-              remover(d.id)
-          }
+        //Criar botao de Edição
+        let btnEditar = document.createElement("button")
+        btnEditar.className = 'btn btn-success btn-sm'
+        btnEditar.innerHTML = '<i class="fa fa-edit"></i>'
+        btnEditar.id = d.iddespesa
+        btnEditar.onclick = function () {
+            editar(d)
+        }
 
         //Criar botao de Exclusao
         let btnExcluir = document.createElement("button")
         btnExcluir.className = 'btn btn-danger btn-sm btn-excluir'
         btnExcluir.innerHTML = '<i class="fas fa-times" style="width:15px"></i>'
-        btnExcluir.id = `id_despesa_${d.id}`
+        btnExcluir.id = d.iddespesa
         btnExcluir.onclick = function () {
-            remover(d.id)
+            remover(d.iddespesa)
         }
 
 
-        linha.insertCell(4).append(btnEditar)
-        linha.insertCell(5).append(btnExcluir)
+        linha.insertCell(5).append(btnEditar)
+        linha.insertCell(6).append(btnExcluir)
     })
 }
 
@@ -333,8 +351,71 @@ function remover(id) {
 
 function parseData(response) {
     response.forEach(function (r) {
-        r['datA_DESP'] = new Date(Date.parse(r['datA_DESP']))    
+        r['datA_DESP'] = new Date(Date.parse(r['datA_DESP']))
     })
 
     return response
+}
+
+async function editar(d) {
+    let ano = document.getElementById("ano")
+    let mes = document.getElementById("mes")
+    let dia = document.getElementById("dia")
+    let tipo = document.getElementById("tipo")
+    let descricao = document.getElementById("descricao")
+    let valor = document.getElementById("valor")
+
+    dia.value = d.datA_DESP.getDate()
+    mes.value = d.datA_DESP.getMonth() + 1
+    ano.value = d.datA_DESP.getFullYear()
+
+    switch (d.tipo) {
+        case 'Alimentação': d.tipo = 1
+            break
+        case 'Faculdade': d.tipo = 2
+            break
+        case 'Lazer': d.tipo = 3
+            break
+        case 'Saúde': d.tipo = 4
+            break
+        case 'Aluguel': d.tipo = 5
+            break
+        case 'Cartão de Crédito': d.tipo = 6
+            break
+        case 'Contas Fixas': d.tipo = 7
+            break
+    }
+    
+    tipo.value = d.tipo
+    descricao.value = d.descricao
+    valor.value = d.valor
+
+    // let despesa = new Despesa(
+    //     ano.value,
+    //     mes.value,
+    //     dia.value,
+    //     tipo.value,
+    //     descricao.value,
+    //     valor.value
+    // )
+
+    // if (despesa.validarDados()) {
+    //     //var sucesso = await bd.editarDespesa(despesa)
+
+    //     // if (sucesso) {
+    //     //     //Cria modal para confirmar edição
+    //     //     let modalTitulo = document.getElementById("modalRemoverTitulo")
+    //     //     let modalConteudo = document.getElementById("modalRemoverConteudo")
+    //     //     let modalButtonRemover = document.getElementById("btnRemover")
+
+    //     //     modalTitulo.innerHTML = "Edição de Despesa"
+    //     //     modalTitulo.className += "modal-title text-primary"
+    //     //     modalConteudo.innerHTML = "Deseja confirmar a edição da despesa abaixo?\n"
+    //     //     modalConteudo.innerHTML += `${despesa.descricao}`
+    //     //     modalButtonRemover.className += "btn btn-primary"
+
+    //     //     $("#modalRemoverDespesa").modal("show")
+    //     // }
+    // }
+
 }
