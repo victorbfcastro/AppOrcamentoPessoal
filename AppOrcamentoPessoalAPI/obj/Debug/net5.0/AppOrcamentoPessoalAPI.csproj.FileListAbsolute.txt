@@ -37,3 +37,4 @@
 /home/victor/Documentos/Curso JavaScript/AppOrcamentoPessoal/AppOrcamentoPessoalAPI/bin/Debug/net5.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 /home/victor/Documentos/Curso JavaScript/AppOrcamentoPessoal/AppOrcamentoPessoalAPI/bin/Debug/net5.0/Newtonsoft.Json.dll
 /home/victor/Documentos/Curso JavaScript/AppOrcamentoPessoal/AppOrcamentoPessoalAPI/bin/Debug/net5.0/Newtonsoft.Json.Bson.dll
+/home/victor/Documentos/Curso JavaScript/AppOrcamentoPessoal/AppOrcamentoPessoalAPI/obj/Debug/net5.0/AppOrcamentoPessoalAPI.csproj.CopyComplete

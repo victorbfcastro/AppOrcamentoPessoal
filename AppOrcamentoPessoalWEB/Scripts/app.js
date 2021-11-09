@@ -139,6 +139,7 @@ class BD {
     }
 
     async removerDespesa(id) {
+        var response = ''
         const request = await fetch('http://localhost:5000/api/Despesas/' + id, {
             method: 'DELETE',
         })
@@ -151,18 +152,27 @@ class BD {
         return false
     }
 
-    async editarDespesa(id) {
-        fetch('http://localhost:5000/api/Despesas/' + id, {
+    async editarDespesa(id, despesa) {
+        var jsonBody = {
+            "DATA_DESP": despesa.datA_DESP,
+            "TIPO": despesa.tipo,
+            "DESCRICAO": despesa.descricao,
+            "VALOR": despesa.valor
+        }
+        var response = ''
+        const request = fetch('http://localhost:5000/api/Despesas/' + id, {
             method: 'PATCH',
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(
-                {
-                    "likes": 5
-                }
-            )
-        });
+            body: JSON.stringify(jsonBody)
+        }).then(data => response = data)
+
+        if (response.status != undefined && response.status == '200') {
+            return true
+        }
+
+        return false
     }
 }
 
@@ -343,9 +353,11 @@ function remover(id) {
     $("#modalRemoverDespesa").modal("show")
 
     //Se usuario clicar em Remover na modal chama funcao bd.removerDespesa passando id recebido
-    modalButtonRemover.onclick = function () {
-        bd.removerDespesa(id)
-        window.location.reload()
+    modalButtonRemover.onclick = async function () {
+        if(bd.removerDespesa(id)){
+            window.location.reload()
+        }
+        
     }
 }
 
@@ -364,7 +376,12 @@ async function editar(d) {
     let tipo = document.getElementById("tipo")
     let descricao = document.getElementById("descricao")
     let valor = document.getElementById("valor")
+    let titulo = document.getElementById("titulo-pagina")
+    let botaoPesquisar = document.getElementById("botao-pesquisar")
+    let iconeBotaoPesquisar = document.getElementById("icone-pesquisar")
+    var tabelaDespesas = document.getElementById("tabelaDespesas")
 
+    //Preenchendo filtros com valores do item selecionado
     dia.value = d.datA_DESP.getDate()
     mes.value = d.datA_DESP.getMonth() + 1
     ano.value = d.datA_DESP.getFullYear()
@@ -385,37 +402,89 @@ async function editar(d) {
         case 'Contas Fixas': d.tipo = 7
             break
     }
-    
+
     tipo.value = d.tipo
     descricao.value = d.descricao
-    valor.value = d.valor
+    valor.value = d.valor.toFixed(2)
 
-    // let despesa = new Despesa(
-    //     ano.value,
-    //     mes.value,
-    //     dia.value,
-    //     tipo.value,
-    //     descricao.value,
-    //     valor.value
-    // )
+    titulo.innerHTML = "Editar Despesa"
 
-    // if (despesa.validarDados()) {
-    //     //var sucesso = await bd.editarDespesa(despesa)
+    //Alterando botao de pesquisa para botao de editar
+    botaoPesquisar.style.backgroundColor = 'green'
+    botaoPesquisar.style.borderColor = 'green'
+    iconeBotaoPesquisar.remove()
+    var iconeEditar = document.createElement('span')
+    iconeEditar.className = 'fas fa-edit'
+    botaoPesquisar.appendChild(iconeEditar)
 
-    //     // if (sucesso) {
-    //     //     //Cria modal para confirmar edição
-    //     //     let modalTitulo = document.getElementById("modalRemoverTitulo")
-    //     //     let modalConteudo = document.getElementById("modalRemoverConteudo")
-    //     //     let modalButtonRemover = document.getElementById("btnRemover")
+    //Limpando tabela para exibir somente item selecionado
+    tabelaDespesas.innerHTML = ''
 
-    //     //     modalTitulo.innerHTML = "Edição de Despesa"
-    //     //     modalTitulo.className += "modal-title text-primary"
-    //     //     modalConteudo.innerHTML = "Deseja confirmar a edição da despesa abaixo?\n"
-    //     //     modalConteudo.innerHTML += `${despesa.descricao}`
-    //     //     modalButtonRemover.className += "btn btn-primary"
+    //Criando row (tr)
+    let linha = tabelaDespesas.insertRow()
 
-    //     //     $("#modalRemoverDespesa").modal("show")
-    //     // }
-    // }
+    //Exibindo somente item selecionado na tabela
+    linha.insertCell(0).innerHTML = d.iddespesa
+    linha.insertCell(1).innerHTML = `${d.datA_DESP.getDate().toString().padStart(2, "0")}/${(d.datA_DESP.getMonth() + 1).toString().padStart(2, "0")}/${d.datA_DESP.getFullYear()}`
+    switch (d.tipo) {
+        case 1: d.tipo = 'Alimentação'
+            break
+        case 2: d.tipo = 'Faculdade'
+            break
+        case 3: d.tipo = 'Lazer'
+            break
+        case 4: d.tipo = 'Saúde'
+            break
+        case 5: d.tipo = 'Aluguel'
+            break
+        case 6: d.tipo = 'Cartão de Crédito'
+            break
+        case 7: d.tipo = 'Contas Fixas'
+            break
+    }
+
+    linha.insertCell(2).innerHTML = d.tipo
+    linha.insertCell(3).innerHTML = d.descricao
+    linha.insertCell(4).innerHTML = d.valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })
+
+    linha.insertCell(5)
+    linha.insertCell(6)
+
+    botaoPesquisar.removeAttribute("onclick")
+    botaoPesquisar.onclick = async function () {
+        let despesa = new Despesa(
+            ano.value,
+            mes.value,
+            dia.value,
+            tipo.value,
+            descricao.value,
+            valor.value
+        )
+        if (despesa.validarDados()) {
+            let modalTitulo = document.getElementById("modalRemoverTitulo")
+            let modalConteudo = document.getElementById("modalRemoverConteudo")
+            let modalButtonRemover = document.getElementById("btnRemover")
+
+            modalTitulo.innerHTML = "Edição de Despesa"
+            modalTitulo.className += "modal-title text-success"
+            modalConteudo.innerHTML = "Deseja confirmar as alterações na despesa?"
+            modalButtonRemover.innerHTML = "Confirmar"
+            modalButtonRemover.className += "btn btn-success"
+
+            $("#modalRemoverDespesa").modal("show")
+
+            //Se usuario clicar em Remover na modal chama funcao bd.removerDespesa passando id recebido
+            modalButtonRemover.onclick = async function () {
+                await bd.editarDespesa(d.iddespesa, despesa)
+                window.location.reload()
+            }
+
+        }
+
+    }
+
 
 }

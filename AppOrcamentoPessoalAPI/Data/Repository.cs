@@ -57,24 +57,25 @@ namespace AppOrcamentoPessoalAPI.Data
         }
         public async Task<bool> CadastraDespesaAsync(Despesa despesa)
         {
+            var data = despesa.DATA_DESP;
+            var tipo = despesa.Tipo;
+            var descricao = despesa.Descricao;
+            var valor = despesa.Valor;
+
+            //PROCEDURE
             using (SqlConnection conexao = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("[dbo].[PCD_DESPESA_INSERT]", conexao))
             {
-                var data = despesa.DATA_DESP;
-                var tipo = despesa.Tipo;
-                var descricao = despesa.Descricao;
-                var valor = despesa.Valor;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("@DATA_DESP", SqlDbType.Date).Value = data;
+                command.Parameters.Add("@TIPO", SqlDbType.VarChar).Value = tipo;
+                command.Parameters.Add("@DESCRICAO", SqlDbType.VarChar).Value = descricao;
+                command.Parameters.Add("@VALOR", SqlDbType.Decimal).Value = valor;
 
-                var parametros = new DynamicParameters();
-                parametros.Add("@DATA_DESP", data, DbType.AnsiString, ParameterDirection.Input, 255);
-                parametros.Add("@TIPO", tipo, DbType.AnsiString, ParameterDirection.Input, 255);
-                parametros.Add("@DESCRICAO", descricao, DbType.AnsiString, ParameterDirection.Input, 255);
-                parametros.Add("@VALOR", valor);
-                var query = "INSERT INTO DESPESA(DATA_DESP, TIPO, DESCRICAO, VALOR) VALUES(@DATA_DESP, @TIPO, @DESCRICAO, @VALOR)";
+                conexao.Open();
+                var result = await command.ExecuteNonQueryAsync();
 
-                int response = await conexao.ExecuteAsync(query, parametros);
-
-                if (response > 0)
-                {
+                if(result > 0){
                     return true;
                 }
 
@@ -84,24 +85,29 @@ namespace AppOrcamentoPessoalAPI.Data
 
         public async Task<bool> RemoveDespesaAsync(int id)
         {
+
+            //PROCEDURE
             using (SqlConnection conexao = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("[dbo].[PCD_DESPESA_DELETE]", conexao))
             {
-                var query = $"DELETE FROM DESPESA WHERE IDDESPESA = {id}";
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("@ID", SqlDbType.Int).Value = id;
 
-                int response = await conexao.ExecuteAsync(query);
+                conexao.Open();
+                var result = await command.ExecuteNonQueryAsync();
 
-                if (response > 0)
-                {
+                if(result > 0){
                     return true;
                 }
 
                 return false;
             }
+
         }
 
         public async Task<bool> EditaDespesaAsync(int id, Despesa despesaEditar)
         {
-            
+
             var sucesso = false;
 
             var despesaAtual = await GetDespesaByIdAsync(id);
@@ -148,7 +154,9 @@ namespace AppOrcamentoPessoalAPI.Data
 
                 sucesso = await RemoveDespesaAsync(despesaAtual.IDDESPESA);
 
-            }else{
+            }
+            else
+            {
                 return false;
             }
 

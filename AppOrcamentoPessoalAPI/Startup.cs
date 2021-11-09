@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using AppOrcamentoPessoalAPI.Data;
+using AppOrcamentoPessoalAPI.Services;
 
 namespace AppOrcamentoPessoalAPI
 {
@@ -34,7 +35,10 @@ namespace AppOrcamentoPessoalAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AppOrcamentoPessoalAPI", Version = "v1" });
             });
+            
             services.AddScoped<IRepository, Repository>();
+            services.AddScoped<IDespesaService, DespesaService>();
+
             services.AddCors(x => x.AddPolicy("AllowAll", builder =>
             {
                 builder.AllowAnyOrigin()
