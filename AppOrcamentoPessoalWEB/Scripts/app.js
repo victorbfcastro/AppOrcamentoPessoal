@@ -178,51 +178,6 @@ class BD {
 
 let bd = new BD()
 
-async function cadastrarDespesa() {
-
-    let ano = document.getElementById("ano")
-    let mes = document.getElementById("mes")
-    let dia = document.getElementById("dia")
-    let tipo = document.getElementById("tipo")
-    let descricao = document.getElementById("descricao")
-    let valor = document.getElementById("valor")
-
-    let despesa = new Despesa(
-        ano.value,
-        mes.value,
-        dia.value,
-        tipo.value,
-        descricao.value,
-        valor.value
-    )
-
-    if (despesa.validarDados()) {
-        var sucesso = await bd.gravar(despesa)
-
-        if (sucesso) {
-            exibeModal(true)
-
-            //Limpando campos após registro com sucesso
-            ano.value = ''
-            mes.value = ''
-            dia.value = ''
-            tipo.value = ''
-            descricao.value = ''
-            valor.value = ''
-
-        } else {
-            alert("Erro ao adicionar despesa no banco de dados!") //SUBSTITUIR POR MODAL!!
-        }
-
-    } else {
-        exibeModal(false)
-
-    }
-
-    $("#modalRegistraDespesa").modal("show")
-
-}
-
 function exibeModal(sucesso) {
     let modalTitulo = document.getElementById("modalTitulo")
     let modalConteudo = document.getElementById("modalConteudo")
@@ -235,14 +190,22 @@ function exibeModal(sucesso) {
         modalButton.className += "btn btn-success"
         modalButton.innerHTML = "OK"
 
-    } else {
+    } else if(!sucesso){
         modalTitulo.innerHTML = "Erro ao Registrar"
         modalTitulo.className += "modal-title text-danger"
         modalConteudo.innerHTML = "Existem campos obrigatórios não preenchidos!"
         modalButton.className += "btn btn-danger"
         modalButton.innerHTML = "Voltar"
 
+    } else if(sucesso == 'db'){
+        modalTitulo.innerHTML = "Erro ao Registrar"
+        modalTitulo.className += "modal-title text-danger"
+        modalConteudo.innerHTML = "Falha ao cadastrar despesa no banco de dados!"
+        modalButton.className += "btn btn-danger"
+        modalButton.innerHTML = "Voltar"
     }
+
+    $("#modalRegistraDespesa").modal("show")
     //Selecionando elemento com JQuery e exibindo modal erro
 }
 
@@ -262,6 +225,7 @@ async function carregaListaDespesas(despesas = Array(), filtro = false) {
         linha.insertCell(3)
         linha.insertCell(4)
         linha.insertCell(5)
+        
     }
 
 
@@ -294,7 +258,6 @@ async function carregaListaDespesas(despesas = Array(), filtro = false) {
 
         linha.insertCell(2).innerHTML = d.tipo
         linha.insertCell(3).innerHTML = d.descricao
-        //linha.insertCell(3).innerHTML = d.valor.toFixed(2).toString().replace('.',',');
         linha.insertCell(4).innerHTML = d.valor.toLocaleString('pt-BR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -302,7 +265,7 @@ async function carregaListaDespesas(despesas = Array(), filtro = false) {
 
         //Criar botao de Edição
         let btnEditar = document.createElement("button")
-        btnEditar.className = 'btn btn-success btn-sm'
+        btnEditar.className = 'btn btn-success btn-sm btn-editar'
         btnEditar.innerHTML = '<i class="fa fa-edit"></i>'
         btnEditar.id = d.iddespesa
         btnEditar.onclick = function () {
@@ -319,8 +282,8 @@ async function carregaListaDespesas(despesas = Array(), filtro = false) {
         }
 
 
-        linha.insertCell(5).append(btnEditar)
-        linha.insertCell(6).append(btnExcluir)
+        linha.insertCell(5).append(btnEditar, btnExcluir)
+        
     })
 }
 
@@ -451,8 +414,7 @@ async function editar(d) {
     })
 
     linha.insertCell(5)
-    linha.insertCell(6)
-
+    
     botaoPesquisar.removeAttribute("onclick")
     botaoPesquisar.onclick = async function () {
         let despesa = new Despesa(
@@ -479,6 +441,11 @@ async function editar(d) {
             //Se usuario clicar em Remover na modal chama funcao bd.removerDespesa passando id recebido
             modalButtonRemover.onclick = async function () {
                 await bd.editarDespesa(d.iddespesa, despesa)
+                function sleep(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms))
+                }
+
+                await sleep(2000)
                 window.location.reload()
             }
 

@@ -1,3 +1,16 @@
 .btn-excluir{
-    margin-left: -50px;
+    margin-left: 10px; 
 }
+
+.btn-editar{
+    margin-left: -80px; 
+}
+
+.container-consulta{
+    margin-top: 120px;
+}
+
+.container-cadastro{
+    margin-top: 120px;
+}
+
