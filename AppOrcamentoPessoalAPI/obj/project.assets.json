@@ -1391,19 +1391,19 @@
     ]
   },
   "packageFolders": {
-    "/home/victor/.nuget/packages/": {}
+    "C:\\Users\\victo\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/victor/Documentos/Curso JavaScript/AppOrcamentoPessoal/AppOrcamentoPessoalAPI/AppOrcamentoPessoalAPI.csproj",
+      "projectUniqueName": "C:\\Users\\victo\\Repositorio\\AppOrcamentoPessoal\\AppOrcamentoPessoalAPI\\AppOrcamentoPessoalAPI.csproj",
       "projectName": "AppOrcamentoPessoalAPI",
-      "projectPath": "/home/victor/Documentos/Curso JavaScript/AppOrcamentoPessoal/AppOrcamentoPessoalAPI/AppOrcamentoPessoalAPI.csproj",
-      "packagesPath": "/home/victor/.nuget/packages/",
-      "outputPath": "/home/victor/Documentos/Curso JavaScript/AppOrcamentoPessoal/AppOrcamentoPessoalAPI/obj/",
+      "projectPath": "C:\\Users\\victo\\Repositorio\\AppOrcamentoPessoal\\AppOrcamentoPessoalAPI\\AppOrcamentoPessoalAPI.csproj",
+      "packagesPath": "C:\\Users\\victo\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\victo\\Repositorio\\AppOrcamentoPessoal\\AppOrcamentoPessoalAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/victor/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\victo\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net5.0"
@@ -1466,7 +1466,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.403/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.403\\RuntimeIdentifierGraph.json"
       }
     }
   }
